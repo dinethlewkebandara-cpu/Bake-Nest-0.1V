@@ -36,7 +36,7 @@ export default function Checkout({ items, onComplete }: CheckoutProps) {
         await addDoc(collection(db, 'orders'), {
           userId: auth.currentUser?.uid || 'guest',
           items: items.map(i => ({ id: i.id, name: i.name, quantity: i.quantity, price: i.price })),
-          total: total + 5,
+          total: total + 500,
           shipping: orderDetails,
           status: 'paid',
           createdAt: serverTimestamp()
@@ -222,7 +222,7 @@ export default function Checkout({ items, onComplete }: CheckoutProps) {
                     <span className="w-6 h-6 bg-white/20 rounded-md flex items-center justify-center text-[10px]">{item.quantity}</span>
                     <span>{item.name}</span>
                   </div>
-                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                  <span>Rs. {(item.price * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
             </div>
@@ -230,17 +230,17 @@ export default function Checkout({ items, onComplete }: CheckoutProps) {
             <div className="space-y-2 text-sm opacity-80">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
+                <span>Rs. {total.toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
                 <span>Delivery</span>
-                <span>$5.00</span>
+                <span>Rs. 500</span>
               </div>
             </div>
             <div className="h-px bg-white/10 my-4" />
             <div className="flex justify-between text-2xl font-serif font-bold">
               <span>Total</span>
-              <span>${(total + 5).toFixed(2)}</span>
+              <span>Rs. {(total + 500).toLocaleString()}</span>
             </div>
           </div>
         </div>

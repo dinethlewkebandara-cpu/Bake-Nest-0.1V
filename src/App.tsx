@@ -17,9 +17,12 @@ import Checkout from './components/Checkout';
 import Footer from './components/Footer';
 import FeaturedProducts from './components/FeaturedProducts';
 import { auth } from './lib/firebase';
+import { Logo } from './components/Logo';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 
-export type Page = 'home' | 'shop' | 'custom' | 'cart' | 'reviews' | 'login' | 'checkout';
+import Profile from './components/Profile';
+
+export type Page = 'home' | 'shop' | 'custom' | 'cart' | 'reviews' | 'login' | 'checkout' | 'profile';
 
 export interface Product {
   id: string;
@@ -34,7 +37,10 @@ export interface CartItem extends Product {
   quantity: number;
 }
 
+import { seedMockUsers } from './lib/seed';
+
 export default function App() {
+  const [appLoading, setAppLoading] = useState(true);
   const [activePage, setActivePage] = useState<Page>('home');
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -44,11 +50,26 @@ export default function App() {
   });
 
   useEffect(() => {
+    // Seed mock data once
+    if (!localStorage.getItem('bakenest-seeded-v2')) {
+      seedMockUsers().then(() => {
+        localStorage.setItem('bakenest-seeded-v2', 'true');
+        console.log("Mock data successfully seeded to Firestore!");
+      }).catch(err => {
+        console.error("Mock seeding failed:", err);
+      });
+    }
+
+    const timer = setTimeout(() => setAppLoading(false), 2500);
+
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setAuthLoading(false);
     });
-    return () => unsubscribe();
+    return () => {
+      unsubscribe();
+      clearTimeout(timer);
+    };
   }, []);
 
   useEffect(() => {
@@ -122,6 +143,7 @@ export default function App() {
       />;
       case 'reviews': return <Reviews />;
       case 'login': return <Auth onLogin={() => setActivePage('home')} />;
+      case 'profile': return <Profile />;
       case 'checkout': return <Checkout items={cart} onComplete={() => { clearCart(); setActivePage('home'); }} />;
       default: return <Hero onShopNow={() => setActivePage('shop')} onOrderCustom={() => setActivePage('custom')} />;
     }
@@ -129,6 +151,32 @@ export default function App() {
 
   return (
     <div className="min-h-screen flex flex-col selection:bg-bakery-accent selection:text-white">
+      <AnimatePresence>
+        {appLoading && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            className="fixed inset-0 z-[100] bg-bakery-cream flex flex-col items-center justify-center pointer-events-none"
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 1, ease: "easeOut" }}
+              className="flex flex-col items-center"
+            >
+              <Logo className="scale-[2] mb-16" />
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: "100%" }}
+                transition={{ duration: 1.5, delay: 0.5 }}
+                className="h-px bg-bakery-accent w-64 mb-4"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <Navbar 
         activePage={activePage} 
         setActivePage={setActivePage} 

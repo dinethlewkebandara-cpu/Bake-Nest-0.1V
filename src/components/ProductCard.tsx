@@ -31,7 +31,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }
       <div className="p-6">
         <div className="flex justify-between items-start mb-2">
           <h3 className="text-xl font-serif font-bold text-bakery-soft-brown">{product.name}</h3>
-          <span className="text-lg font-serif font-bold text-bakery-brown">${product.price.toFixed(2)}</span>
+          <span className="text-lg font-serif font-bold text-bakery-brown">Rs. {product.price.toLocaleString()}</span>
         </div>
         <p className="text-sm text-bakery-body line-clamp-2 leading-relaxed">
           {product.description}

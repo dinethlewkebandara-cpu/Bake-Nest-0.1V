@@ -22,7 +22,9 @@ export default function Auth({ onLogin }: AuthProps) {
   const [formData, setFormData] = useState({
     email: '',
     password: '',
-    fullName: ''
+    firstName: '',
+    lastName: '',
+    phone: ''
   });
 
   const handleSubmit = async (e: FormEvent) => {
@@ -30,12 +32,15 @@ export default function Auth({ onLogin }: AuthProps) {
     setLoading(true);
     setError(null);
 
+    const fullName = `${formData.firstName} ${formData.lastName}`.trim();
+
     try {
       if (isLogin) {
         // Sign In
         const userCredential = await signInWithEmailAndPassword(auth, formData.email, formData.password);
         if (!userCredential.user.emailVerified) {
           setError("Please verify your email address before logging in.");
+          await auth.signOut();
         } else {
           onLogin();
         }
@@ -45,7 +50,7 @@ export default function Auth({ onLogin }: AuthProps) {
         const user = userCredential.user;
 
         // Update Firebase Auth profile
-        await updateProfile(user, { displayName: formData.fullName });
+        await updateProfile(user, { displayName: fullName });
         
         // Send verification email
         await sendEmailVerification(user);
@@ -55,7 +60,10 @@ export default function Auth({ onLogin }: AuthProps) {
           await setDoc(doc(db, 'users', user.uid), {
             uid: user.uid,
             email: user.email,
-            displayName: formData.fullName,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            displayName: fullName,
+            phone: formData.phone,
             createdAt: serverTimestamp(),
             updatedAt: serverTimestamp()
           });
@@ -106,15 +114,37 @@ export default function Auth({ onLogin }: AuthProps) {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                className="space-y-2"
+                className="space-y-4"
               >
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      placeholder="First Name" 
+                      required={!isLogin}
+                      value={formData.firstName}
+                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                      className="w-full pl-4 pr-4 py-4 bg-bakery-cream rounded-xl border border-bakery-border outline-none focus:border-bakery-accent" 
+                    />
+                  </div>
+                  <div className="relative">
+                    <input 
+                      type="text" 
+                      placeholder="Last Name" 
+                      required={!isLogin}
+                      value={formData.lastName}
+                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                      className="w-full pl-4 pr-4 py-4 bg-bakery-cream rounded-xl border border-bakery-border outline-none focus:border-bakery-accent" 
+                    />
+                  </div>
+                </div>
                 <div className="relative">
                   <input 
-                    type="text" 
-                    placeholder="Full Name" 
+                    type="tel" 
+                    placeholder="Phone Number" 
                     required={!isLogin}
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full pl-12 pr-4 py-4 bg-bakery-cream rounded-xl border border-bakery-border outline-none focus:border-bakery-accent" 
                   />
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 text-bakery-brown/30" size={20} />

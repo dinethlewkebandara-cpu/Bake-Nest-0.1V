@@ -74,8 +74,8 @@ export default function Cart({ items, onUpdateQty, onRemove, onCheckout, onConti
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-serif font-bold text-bakery-brown text-xl">${(item.price * item.quantity).toFixed(2)}</p>
-                <p className="text-xs text-bakery-brown/40">${item.price.toFixed(2)} each</p>
+                <p className="font-serif font-bold text-bakery-brown text-xl">Rs. {(item.price * item.quantity).toLocaleString()}</p>
+                <p className="text-xs text-bakery-brown/40">Rs. {item.price.toLocaleString()} each</p>
               </div>
             </div>
           ))}
@@ -95,16 +95,16 @@ export default function Cart({ items, onUpdateQty, onRemove, onCheckout, onConti
             <div className="space-y-4 mb-8">
               <div className="flex justify-between text-bakery-brown/60">
                 <span>Subtotal</span>
-                <span>${total.toFixed(2)}</span>
+                <span>Rs. {total.toLocaleString()}</span>
               </div>
               <div className="flex justify-between text-bakery-brown/60">
                 <span>Delivery</span>
-                <span>$5.00</span>
+                <span>Rs. 500</span>
               </div>
               <div className="h-px bg-bakery-brown/10 my-4" />
               <div className="flex justify-between text-xl font-bold text-bakery-brown">
                 <span>Total</span>
-                <span>${(total + 5).toFixed(2)}</span>
+                <span>Rs. {(total + 500).toLocaleString()}</span>
               </div>
             </div>
             <button 

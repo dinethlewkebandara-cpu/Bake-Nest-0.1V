@@ -3,6 +3,7 @@ import { Page } from '../App';
 import { useState } from 'react';
 import { User as FirebaseUser, signOut } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { Logo } from './Logo';
 
 interface NavbarProps {
   activePage: Page;
@@ -35,13 +36,10 @@ export default function Navbar({ activePage, setActivePage, cartCount, user }: N
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <div 
-            className="flex-shrink-0 cursor-pointer flex items-center space-x-3"
+            className="flex-shrink-0 cursor-pointer flex items-center group"
             onClick={() => setActivePage('home')}
           >
-            <div className="w-10 h-10 bg-bakery-pink rounded-full flex items-center justify-center">
-              <span className="text-bakery-brown font-bold text-xl">B</span>
-            </div>
-            <span className="text-2xl font-serif font-bold text-bakery-brown tracking-tight">BakeNest</span>
+            <Logo className="scale-75 md:scale-95 origin-left transition-transform group-hover:scale-100" />
           </div>
 
           {/* Desktop Nav */}
@@ -76,12 +74,21 @@ export default function Navbar({ activePage, setActivePage, cartCount, user }: N
             </button>
             {user ? (
               <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 bg-bakery-cream px-4 py-2 rounded-full border border-bakery-border">
-                  <User size={16} className="text-bakery-brown" />
-                  <span className="text-sm font-semibold text-bakery-brown truncate max-w-[100px]">
+                <button 
+                  onClick={() => setActivePage('profile')}
+                  className="flex items-center space-x-2 bg-bakery-cream p-1 pr-4 rounded-full border border-bakery-border hover:border-bakery-accent transition-all group"
+                >
+                  {user.photoURL ? (
+                    <img src={user.photoURL} alt="User" className="w-8 h-8 rounded-full border border-bakery-accent object-cover" referrerPolicy="no-referrer" />
+                  ) : (
+                    <div className="w-8 h-8 bg-bakery-pink rounded-full flex items-center justify-center">
+                      <User size={16} className={`transition-colors ${activePage === 'profile' ? 'text-bakery-accent' : 'text-bakery-brown'}`} />
+                    </div>
+                  )}
+                  <span className={`text-sm font-semibold truncate max-w-[100px] transition-colors ${activePage === 'profile' ? 'text-bakery-accent' : 'text-bakery-brown'}`}>
                     {user.displayName || user.email?.split('@')[0]}
                   </span>
-                </div>
+                </button>
                 <button 
                   onClick={handleSignOut}
                   className="p-2 text-bakery-brown hover:text-red-500 transition-colors"
@@ -141,13 +148,24 @@ export default function Navbar({ activePage, setActivePage, cartCount, user }: N
               </button>
             ))}
             {user ? (
-              <button 
-                onClick={() => { handleSignOut(); setIsOpen(false); }}
-                className="flex items-center space-x-3 w-full px-4 py-3 text-lg font-serif text-red-500 hover:bg-red-50 rounded-xl"
-              >
-                <LogOut size={20} />
-                <span>Sign Out ({user.displayName || 'Me'})</span>
-              </button>
+              <>
+                <button 
+                  onClick={() => { setActivePage('profile'); setIsOpen(false); }}
+                  className={`flex items-center space-x-3 w-full px-4 py-3 text-lg font-serif ${
+                    activePage === 'profile' ? 'text-bakery-accent bg-bakery-pink/30' : 'text-bakery-brown'
+                  } rounded-xl`}
+                >
+                  <User size={20} />
+                  <span>Your Profile</span>
+                </button>
+                <button 
+                  onClick={() => { handleSignOut(); setIsOpen(false); }}
+                  className="flex items-center space-x-3 w-full px-4 py-3 text-lg font-serif text-red-500 hover:bg-red-50 rounded-xl"
+                >
+                  <LogOut size={20} />
+                  <span>Sign Out</span>
+                </button>
+              </>
             ) : (
               <button 
                 onClick={() => { setActivePage('login'); setIsOpen(false); }}
