@@ -1,0 +1,91 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "Store basic user information.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "displayName": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "email", "createdAt"]
+    },
+    "Product": {
+      "title": "Bakery Product",
+      "description": "Items available in the shop.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "price": { "type": "number" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "image": { "type": "string" },
+        "featured": { "type": "boolean" }
+      }
+    },
+    "CustomCake": {
+      "title": "Custom Cake Booking",
+      "description": "Details of the custom cake requested by a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "cakeType": { "type": "string" },
+        "flavor": { "type": "string" },
+        "weight": { "type": "string" },
+        "message": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "confirmed", "in-progress", "completed"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Review": {
+      "title": "Customer Review",
+      "description": "User reviews for the bakery.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "Order": {
+      "title": "Shop Order",
+      "description": "Orders placed through the shop checkout.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "items": { "type": "array" },
+        "total": { "type": "number" },
+        "shippingDetails": { "type": "object" },
+        "status": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      }
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile data."
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Publicly readable bakery catalog."
+    },
+    "/custom_cakes/{bookingId}": {
+      "schema": "CustomCake",
+      "description": "Private bookings for custom cakes."
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Public reviews."
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer purchase history."
+    }
+  }
+}
